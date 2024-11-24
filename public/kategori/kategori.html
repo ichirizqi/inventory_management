@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col md-12">
+                    <div class="card border-0 shadow rounded">
+                        <div class="card-body">
+                            <a href="createKategori.html" class="btn btn-md btn-success mb-3">TAMBAH KATEGORI</a>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Nama</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataKategori">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+    <script>
+        function getKategori(){
+            $.ajax({
+                type: 'GET',
+                url: '../../api/getKategori.php',
+                success: function(response){
+                    let kategori = response.data
+                    for (let i = 0; i < kategori.length; i++){
+                        let html =
+                        `
+                            <tr>
+                                <td>${i+1}.</td>
+                                <td>${kategori[i].nama}</td>
+                                <td>
+                                    <a href="../../api/getKategori.php?id=${kategori[i].id}" class="btn btn-sm btn-primary">EDIT</a>
+                                    <button class="btn btn-sm btn-danger mb-3 delete-btn" onclick="deleteKategori(${kategori[i].id})">DELETE</button>
+                                </td>
+                             </tr>
+                        `;
+                        $("#dataKategori").append(html);
+                    }
+                }
+            });
+        }
+        $(function () {
+            getKategori()
+        });
+        function deleteKategori(id) {
+            $.ajax({ 
+                type: 'POST',
+                url: '../../api/deleteKategori.php',
+                data: {
+                    id : id
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("berhasil ")
+                        location.reload();
+                    } else {
+                        alert("gagal ")
+                    }
+                }
+            });
+        }
+    </script>
+    </body>
+</html>
