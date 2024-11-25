@@ -44,8 +44,8 @@
                                 <td>${i+1}.</td>
                                 <td>${kategori[i].nama}</td>
                                 <td>
-                                    <a href="../../api/getKategori.php?id=${kategori[i].id}" class="btn btn-sm btn-primary">EDIT</a>
-                                    <button class="btn btn-sm btn-danger mb-3 delete-btn" onclick="deleteKategori(${kategori[i].id})">DELETE</button>
+                                    <a href="editKategori.html?id=${kategori[i].id}" class="btn btn-sm btn-primary">EDIT</a>
+                                    <button class="btn btn-sm btn-danger delete-btn" onclick="deleteKategori(${kategori[i].id})">DELETE</button>
                                 </td>
                              </tr>
                         `;
@@ -66,10 +66,10 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert("berhasil ")
+                        alert("Success delete data");
                         location.reload();
                     } else {
-                        alert("gagal ")
+                        alert("Failed delete data");
                     }
                 }
             });

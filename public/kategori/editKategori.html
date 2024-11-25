@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow rounded">
+                        <div class="card-body">
+                            <form action="">
+                                <div class="form-group">
+                                    <label for="nama">Nama Kategori</label>
+                                    <input type="text" id="nama" name="nama" class="form-control" placeholder="Masukkan Nama Kategori">
+                                    <small id="errorNama" class="text-danger" style="display: none;">Nama Wajib Diisi</small>
+                                </div>
+                            </form>
+                            <button type="submit" class="btn btn-success" id="editKategori">UPDATE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+
+        <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+
+        <script>
+            $(function(){
+                const params = new URLSearchParams(window.location.search);
+                const id = params.get('id');
+
+                if(!id){
+                    alert("ID kategori tidak ditemukan");
+                    window.location.href = "kategori.html";
+                    return;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: `../../api/getKategoriById.php?id=${id}`,
+                    success: function(response){
+                        if(response.success){
+                            $("#nama").val(response.data.nama);
+                        }else{
+                            alert(response.message);
+                            window.location.href = "kategori.html";
+                        }
+                    },
+                    error: function() {
+                        alert("Terjadi kesalahan memuat data");
+                        window.location.href = "kategori.html";
+                    }
+                });
+
+                $("#editKategori").on("click", function(){
+                    let nama = $("#nama").val();
+
+                    if(nama === ""){
+                        $("#errorNama").show();
+                        location.reload();
+                    }else{
+                        $("errorNama").hide();
+
+                        $.ajax({
+                        type: 'PUT',
+                        url: '../../api/updateKategori.php',
+                        data: JSON.stringify({
+                            id:id,
+                            nama: nama
+                        }),
+                        contentType: 'application/json',
+                        success: function(response){
+                            if(response.message){
+                                alert("Berhasil Update Data");
+                                window.location.href = "kategori.html";
+                            }else{
+                                alert("Gagal"+response.message);
+                                window.location.href = "kategori.htmk"
+                            }
+                        },
+                        error: function(){
+                            alert("Terjadi kesalahan mengirim data");
+                            window.location.href = "kategori.html";
+                        }
+                    })
+                    }
+                })
+            })
+        </script>
+    </body>
+</html>

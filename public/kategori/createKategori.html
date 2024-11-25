@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="id=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow rounded">
+                        <div class="card-body">
+                            <form action="">
+                                <div class="form-group">
+                                    <label for="nama">Nama Kategori</label>
+                                    <input type="text" id="nama" name="nama" class="form-control" placeholder="Masukkan nama kategori" required>
+                                    <small id="errorNama" class="text-danger" style="display:none;">Nama Wajib Diisi</small>
+                                </div>
+                            </form>
+                            <button type="submit" class="btn btn-success" id="createKategori">SIMPAN</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+        <script>
+            $(function(){
+                $("#createKategori").on("click", function(){
+
+                    let nama = $("#nama").val();
+
+                    if(nama === ""){
+                        $("#errorNama").show();
+                    }else{
+                        $("#errorNama").hide();
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '../../api/inputKategori.php',
+                            data: {
+                                nama: nama
+                            },
+                            success: function(response){
+                                if(response.success){
+                                    alert("Kategori Berhasil Ditambahkan");
+                                    window.location.href = "kategori.html";
+                                }else{
+                                    alert("Gagal"+response.message);
+                                }
+                            },
+                            error: function(){
+                                alert("Terjadi kesalahan saat menambahkan kategori");
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
