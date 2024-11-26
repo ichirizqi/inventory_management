@@ -1,0 +1,126 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="id=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow rounded">
+                        <div class="card-body">
+                            <form action="">
+                                <div class="form-group">
+                                    <label for="nama_produk">Nama Produk</label>
+                                    <input type="text" id="nama_produk" name="nama_produk" class="form-control" placeholder="Masukkan nama produk" required>
+                                    <small id="errorNama" class="text-danger" style="display:none;">Nama Produk Wajib Diisi</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="id_kategori">Pilih Kategori</label>
+                                    <select id="id_kategori" name="id_kategori" class="form-control" required>
+                                        <!-- Kategori options will be populated by JavaScript -->
+                                    </select>
+                                    <small id="errorKategori" class="text-danger" style="display:none;">Kategori Wajib Dipilih</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="stok">Stok</label>
+                                    <input type="number" id="stok" name="stok" class="form-control" placeholder="Masukkan jumlah stok" required>
+                                    <small id="errorStok" class="text-danger" style="display:none;">Stok Wajib Diisi</small>
+                                </div>
+
+                            </form>
+                            <button type="submit" class="btn btn-success" id="createProduk">SIMPAN</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+        <script>
+            $(function() {
+                // Fetch Kategori data and populate dropdown
+                $.ajax({
+                    type: 'GET',
+                    url: '../../api/getKategori.php',  // Adjust the URL if necessary
+                    success: function(response) {
+                        if (response.data) {
+                            // Populate the dropdown with categories
+                            let kategoriOptions = '';
+                            response.data.forEach(function(kategori) {
+                                kategoriOptions += `<option value="" disabled selected>Pilih Kategori</option><option value="${kategori.id}">${kategori.nama}</option>`;
+                            });
+                            $("#id_kategori").html(kategoriOptions);
+                        } else {
+                            alert("Gagal mengambil data kategori");
+                        }
+                    },
+                    error: function() {
+                        alert("Terjadi kesalahan saat memuat kategori");
+                    }
+                });
+
+                // Handle form submit
+                $("#createProduk").on("click", function(e) {
+                    e.preventDefault();  // Prevent the default form submission
+
+                    let nama_produk = $("#nama_produk").val();
+                    let id_kategori = $("#id_kategori").val();
+                    let stok = $("#stok").val();
+
+                    let valid = true;
+
+                    // Validate inputs
+                    if (nama_produk === "") {
+                        $("#errorNama").show();
+                        valid = false;
+                    } else {
+                        $("#errorNama").hide();
+                    }
+
+                    if (id_kategori === "") {
+                        $("#errorKategori").show();
+                        valid = false;
+                    } else {
+                        $("#errorKategori").hide();
+                    }
+
+                    if (stok === "") {
+                        $("#errorStok").show();
+                        valid = false;
+                    } else {
+                        $("#errorStok").hide();
+                    }
+
+                    // If all fields are valid, proceed with AJAX request
+                    if (valid) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '../../api/inputProduk.php',  // Endpoint for adding a product
+                            data: {
+                                nama_produk: nama_produk,
+                                id_kategori: id_kategori,
+                                stok: stok
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    alert("Produk Berhasil Ditambahkan");
+                                    window.location.href = "produk.html";  // Redirect after successful insert
+                                } else {
+                                    alert("Gagal: " + response.message);
+                                }
+                            },
+                            error: function() {
+                                alert("Terjadi kesalahan saat menambahkan produk");
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
