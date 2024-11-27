@@ -1,0 +1,133 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width: device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="edge=ie">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow rounded">
+                        <div class="card-body">
+                            <form action="">
+                                <div class="form-group">
+                                    <label for="nama_produk">Nama Produk</label>
+                                    <input type="text" id="nama_produk" name="nama_produk" class="form-control" placeholder="Masukkan Nama Produk" required>
+                                    <small id="errorNama" class="text-danger" style="display: none;">Nama Produk Wajib Diisi</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="id_kategori">Kategori Produk</label>
+                                    <select name="id_kategori" id="id_kategori" class="form-control" required>
+                                        
+                                    </select>
+                                    <small id="errorKategori" class="text-danger" style="display: none;"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="stok">Stok</label>
+                                    <input type="text" id="stok" name="stok" class="form-control" readonly>
+                                </div>
+                            </form>
+                            <button type="submit" class="btn btn-success btn-md" id="editProduk">SIMPAN</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+
+        <script>
+            $(function(){
+                const params = new URLSearchParams(window.location.search);
+                const id = params.get('id');
+
+                if(!id){
+                    alert("ID tidak ditemukan");
+                    window.location.href = "produk.html";
+                    return;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: '../../api/getKategori.php',
+                    success: function(response){
+                        if(response.data){
+                            let html = `<option value="" disabled selected>Pilih Kategori</option>`;
+                            response.data.forEach(function(kategori) {
+                                html += `<option value="${kategori.id}">${kategori.nama}</option>`;
+                            });
+                            $("#id_kategori").append(html);
+                        }
+                    }
+                });
+
+                $.ajax({
+                    type: 'GET',
+                    url: `../../api/getProdukById.php?id=${id}`,
+                    success: function(response){
+                        if(response.success){
+                            $("#nama_produk").val(response.data.nama_produk);
+                            $("#stok").val(response.data.stok);
+                            $("#id_kategori").val(response.data.id_kategori);
+                        }else{
+                            alert("Gagal Load data");
+                            window.location.href = "produk.html";
+                        }
+                    },
+                    error: function(){
+                        alert("Terjadi kesalahan memuat data");
+                        window.location.href = "produk.html";
+                    }
+                });
+
+                $("#editProduk").on("click", function(){
+                    let nama_produk= $("#nama_produk").val();
+                    let id_kategori= $("#id_kategori").val();
+
+                    if(nama_produk === "" && id_kategori === ""){
+                        $("#errorNama").show();
+                        $("#errorKategori").show();
+                        location.reload();
+                    }else{
+                        $("errorNama").hide();
+                        $("errorKategori").hide();
+
+                        $.ajax({
+                        type: 'PATCH',
+                        url: '../../api/updateProduk.php',
+                        data: JSON.stringify({
+                            id:id,
+                            nama: nama_produk,
+                            id_kategori: id_kategori
+                        }),
+                        contentType: 'application/json',
+                        success: function(response){
+                            if(response.success){
+                                alert("Berhasil Update Data");
+                                window.location.href = "produk.html";
+                            }else{
+                                alert("Gagal");
+                                window.location.href = "produk.html";
+                            }
+                        },
+                        error: function(){
+                            alert("Terjadi kesalahan mengirim data");
+                            window.location.href = "produk.html";
+                        }
+                    })
+                    }
+                })
+
+
+
+            })
+        </script>
+    </body>
+</html>

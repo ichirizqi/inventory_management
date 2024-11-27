@@ -11,7 +11,10 @@
                 <div class="col-md-12">
                     <div class="card border-0 shadow rounded">
                         <div class="card-body">
-                            <a href="createProduk.html" class="btn btn-md btn-success mb-3">TAMBAH PRODUK</a>
+                            <div class="d-flex justify-content-between">
+                                <a href="../kategori/kategori.html" class="btn btn-md btn-primary mb-3">MENU KATEGORI</a>
+                                <a href="createProduk.html" class="btn btn-md btn-success mb-3">TAMBAH PRODUK</a>
+                            </div>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -49,8 +52,9 @@
                                 <td>${produk[i].nama_kategori}</td>
                                 <td>${produk[i].stok}</td>
                                 <td>
-                                    <a href="editKategori.html?id=${produk[i].id_produk}" class="btn btn-sm btn-primary">EDIT</a>
+                                    <a href="editProduk.html?id=${produk[i].id_produk}" class="btn btn-sm btn-primary">EDIT</a>
                                     <button class="btn btn-sm btn-danger" onclick="deleteProduk(${produk[i].id_produk})">DELETE</button>
+                                    <a href="updateStok.html?id=${produk[i].id_produk}" class="btn btn-sm btn-info">UPDATE STOK</a>
                                 </td>
                              </tr>
                         `;

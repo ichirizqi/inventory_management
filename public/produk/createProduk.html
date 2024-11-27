@@ -50,11 +50,12 @@
                     success: function(response) {
                         if (response.data) {
                             // Populate the dropdown with categories
-                            let kategoriOptions = '';
+                            let html = '';
                             response.data.forEach(function(kategori) {
-                                kategoriOptions += `<option value="" disabled selected>Pilih Kategori</option><option value="${kategori.id}">${kategori.nama}</option>`;
+                                html += `<option value="" disabled selected>Pilih Kategori</option>
+                                        <option value="${kategori.id}">${kategori.nama}</option>`;
                             });
-                            $("#id_kategori").html(kategoriOptions);
+                            $("#id_kategori").append(html);
                         } else {
                             alert("Gagal mengambil data kategori");
                         }
@@ -65,14 +66,11 @@
                 });
 
                 // Handle form submit
-                $("#createProduk").on("click", function(e) {
-                    e.preventDefault();  // Prevent the default form submission
+                $("#createProduk").on("click", function() {
 
                     let nama_produk = $("#nama_produk").val();
                     let id_kategori = $("#id_kategori").val();
                     let stok = $("#stok").val();
-
-                    let valid = true;
 
                     // Validate inputs
                     if (nama_produk === "") {
@@ -97,7 +95,6 @@
                     }
 
                     // If all fields are valid, proceed with AJAX request
-                    if (valid) {
                         $.ajax({
                             type: 'POST',
                             url: '../../api/inputProduk.php',  // Endpoint for adding a product
@@ -118,7 +115,6 @@
                                 alert("Terjadi kesalahan saat menambahkan produk");
                             }
                         });
-                    }
                 });
             });
         </script>
