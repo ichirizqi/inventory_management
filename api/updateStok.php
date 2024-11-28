@@ -1,78 +1,72 @@
 <?php
-
 header("Content-Type: application/json");
 include "../database/koneksi.php";
 
-if ($_SERVER['REQUEST_METHOD'] === "PATCH") {
+if($_SERVER['REQUEST_METHOD'] === "PATCH"){
     $input = json_decode(file_get_contents("php://input"), true);
-
-    if (
-        isset($input['id']) && !empty($input['id']) &&
+    
+    if(isset($input['id']) && !empty($input['id']) &&
         isset($input['stok']) && !empty($input['stok']) &&
-        isset($input['tipe']) && in_array($input['tipe'], ['masuk', 'keluar'])
-    ) {
-
+        isset($input['tipe']) && !empty($input['tipe'])
+    ){
         $id = $input['id'];
-        $stok = (int)$input['stok'];
+        $stok = $input['stok'];
         $tipe = $input['tipe'];
 
-        // Fetch current stock
-        $query_get_stok = mysqli_query($koneksi, "SELECT stok FROM produk WHERE id = '$id'");
-        if (mysqli_num_rows($query_get_stok) > 0) {
-            $data = mysqli_fetch_assoc($query_get_stok);
-            $stok_sekarang = (int)$data['stok'];
+        $query = mysqli_query($koneksi, "SELECT * FROM PRODUK WHERE id = '$id'");
+        $cek = mysqli_num_rows($query);
 
-            // Process stock update
-            if ($tipe === 'masuk') {
+        if($cek > 0){
+            $data = mysqli_fetch_assoc($query);
+            $stok_sekarang = $data['stok'];
+
+            if($tipe == "masuk"){
                 $stok_baru = $stok_sekarang + $stok;
-            } elseif ($tipe === 'keluar') {
-                if ($stok_sekarang < $stok) {
+            }else{
+                if($stok_sekarang < $stok){
                     echo json_encode([
                         'success' => false,
-                        'message' => "Stok tidak mencukupi untuk operasi keluar"
+                        'message' => "Stok tidak mencukupi"
                     ]);
                     exit;
+                }else{
+                    $stok_baru = $stok_sekarang - $stok;
                 }
-                $stok_baru = $stok_sekarang - $stok;
             }
 
-            // Update stock in database
-            $query_update_stok = mysqli_query($koneksi, "UPDATE produk SET stok = '$stok_baru' WHERE id = '$id'");
-
-            if ($query_update_stok) {
-                echo json_encode([
+            $query_update = mysqli_query($koneksi, "UPDATE produk SET stok = '$stok_baru' WHERE id = '$id'");
+            if($query_update){
+                $result = [
                     'success' => true,
-                    'message' => "Stok berhasil diperbarui",
-                    'stok_terbaru' => $stok_baru
-                ]);
-            } else {
-                echo json_encode([
+                    'message' => "Stok berhasil diupdate"
+                ];
+            }else{
+                $result = [
                     'success' => false,
-                    'message' => "Gagal memperbarui stok"
-                ]);
+                    'message' => "Gagal update stok"
+                ];
             }
-        } else {
-            echo json_encode([
-                'success' => false,
-                'message' => "Produk dengan ID tersebut tidak ditemukan"
-            ]);
         }
-    } else {
+    }else{
         $errors = [];
-        if (empty($input['id'])) $errors[] = "ID Produk is required";
-        if (empty($input['stok'])) $errors[] = "stok is required";
-        if (empty($input['tipe'])) $errors[] = "Tipe (masuk/keluar) is required";
 
-        echo json_encode([
+        if(empty($input['id'])){
+            $errors = "ID is required";
+        }
+        if(empty($input['Stok'])){
+            $errors = "Stok is required";
+        }
+        if(empty($input['tipe'])){
+            $errors = "Tipe is required";
+        }
+
+        $result = [
             'success' => false,
             'message' => implode(', ', $errors)
-        ]);
+        ];
     }
-} else {
-    echo json_encode([
-        'success' => false,
-        'message' => "Metode tidak diizinkan"
-    ]);
 }
+
+echo json_encode($result);
 
 ?>

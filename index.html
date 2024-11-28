@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card boder-0 shadow rounded">
+                        <div class="card-body">
+                            <h2 class="text-center mb-5">Silahkan Login</h2>
+                            <form action="">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan Username" required>
+                                    <small class="text-danger" id="errorUsername" style="display: none;">Username wajib diisi</small>
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password" required>
+                                    <small class="text-danger" id="errorPassword" style="display: none;">Password wajib diisi</small>
+                                </div>
+                                <button type="submit" class="btn btn-md btn-primary d-flex justify-content-center" id="login">LOGIN</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+        <script>
+            $(function(){
+                $("#login").on("click", function(){
+                    const username = $("#username").val();
+                    const password = $("#password").val();
+
+                    if(username === ""){
+                        $("#errorUsername").show();
+                    }else{
+                        $("#errorUsername").hide();
+                    }
+
+                    if(password === ""){
+                        $("#errorPassword").show();
+                    }else{
+                        $("#errorPassword").hide();
+                    }
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '../../api/login.php',
+                        data: {
+                            username: username,
+                            password: password
+                        },
+                        success: function(response){
+                            if(response.success){
+                                alert("Berhasil Login");
+                                localStorage.setItem('id', response.data.id);
+                                window.location.href = "public/produk/produk.html";   
+                            }else{
+                                alert("Maaf data yang anda masukkan salah");
+                                location.reload();
+                            }
+                        }
+                    })
+                })
+            })
+        </script>
+    </body>
+</html>

@@ -1,35 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Stok Produk</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Update Stok Produk</h1>
-        <form>
-            <div class="form-group">
-                <label for="stok">STOK</label>
-                <input type="number" class="form-control" id="stok" placeholder="Masukkan Jumlah Stok" required>
-            </div>
-            <div class="form-group">
-                <label for="tipe">Tipe</label>
-                <select class="form-control" id="tipe" required>
-                    <option value="" disabled selected>Pilih Tipe</option>
-                    <option value="masuk">Masuk</option>
-                    <option value="keluar">Keluar</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary" id="updateStok">Update</button>
-        </form>
-        <div id="response" class="mt-4"></div>
-    </div>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(function(){
+    <body>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow rounded">
+                        <div class="card-body">
+                            <form action="">
+                                <div class="form-group">
+                                    <label for="nama">Nama Produk</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="stok">Stok Produk</label>
+                                    <input type="number" class="form-control" id="stok" name="stok" placeholder="Masukkan stok" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tipe">Tipe Update</label>
+                                    <select name="tipe" id="tipe" class="form-control" required>
+                                        <option value="" disabled selected>Pilih Tipe</option>
+                                        <option value="masuk">Masuk</option>
+                                        <option value="keluar">Keluar</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-md btn-success" id="updateStok">UPDATE STOK</button>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
+        <script>
+            $(function(){
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
 
@@ -67,6 +79,58 @@
                 });
             });
         })
-    </script>
-</body>
+            $(function(){
+                const params = new URLSearchParams(window.location.search);
+                const id = params.get('id');
+
+                if(!id){
+                    alert("ID tidak ditemukan");
+                    window.location.href = "produk.html";
+                    return;
+                }
+                $.ajax({
+                    type: 'GET',
+                    url: `../../api/getProdukByid.php?id=${id}`,
+                    success: function(response){
+                        if(response.success){
+                            $("#nama").val(response.data.nama_produk);
+                        }else{
+                            alert("Data tidak dapat dimuat");
+                            window.location.href = "produk.html";
+                        }
+                    }
+                })
+
+                $("#updateStok").on("click", function(){
+                    const stok = $("#stok").val();
+                    const tipe = $("#tipe").val();
+
+                    if(!stok || !tipe){
+                        alert("Data wajib diisi");
+                        return;
+                    }
+
+                    $.ajax({
+                        type: 'PATCH',
+                        url: "../../api/updateStok.php",
+                        data: JSON.stringify({
+                            id: id,
+                            stok: stok,
+                            tipe: tipe
+                        }),
+                        contentType: 'application/json',
+                        success: function(response){
+                            if(response.success){
+                                alert("Berhasil update stok");
+                                window.location.href = "produk.html";
+                            }else{
+                                alert("Gagal update stok");
+                                window.location.href = "produk.html";
+                            }
+                        }
+                    });
+                });
+            })
+        </script>
+    </body>
 </html>
